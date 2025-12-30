@@ -1,0 +1,217 @@
+<Window x:Class="KitsuneViewer.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonDock="https://github.com/Dirkster99/AvalonDock"
+        xmlns:avalonDockThemes="clr-namespace:AvalonDock.Themes;assembly=AvalonDock.Themes.VS2013"
+        xmlns:vm="clr-namespace:KitsuneViewer.ViewModels"
+        xmlns:views="clr-namespace:KitsuneViewer.Views"
+        Title="Kitsune Log Viewer" 
+        Icon="/KitsuneViewer.ico"
+        Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}">
+    
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    
+    <Window.InputBindings>
+        <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenFilesCommand}"/>
+        <KeyBinding Key="W" Modifiers="Ctrl" Command="{Binding ClosePanelCommand}" 
+                    CommandParameter="{Binding ActivePanel}"/>
+        <KeyBinding Key="Q" Modifiers="Ctrl" Command="{Binding ExitCommand}"/>
+    </Window.InputBindings>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Menu -->
+        <Menu Grid.Row="0" Background="{DynamicResource SecondaryBackgroundBrush}">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open Files..." Command="{Binding OpenFilesCommand}" 
+                          InputGestureText="Ctrl+O">
+                    <MenuItem.Icon>
+                        <TextBlock Text="📂"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="_Save Session..." Command="{Binding SaveSessionCommand}">
+                    <MenuItem.Icon>
+                        <TextBlock Text="💾"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Sessions" x:Name="SessionsMenu">
+                    <MenuItem.Icon>
+                        <TextBlock Text="📋"/>
+                    </MenuItem.Icon>
+                    <!-- Placeholder - will be replaced dynamically -->
+                    <MenuItem Header="(Loading...)" IsEnabled="False"/>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="_Close Tab" Command="{Binding ClosePanelCommand}"
+                          CommandParameter="{Binding ActivePanel}"
+                          InputGestureText="Ctrl+W"/>
+                <MenuItem Header="Close _All Tabs" Command="{Binding CloseAllPanelsCommand}"/>
+                <Separator/>
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}" 
+                          InputGestureText="Ctrl+Q"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="_Time Sync" IsCheckable="True" 
+                          IsChecked="{Binding IsTimeSyncEnabled}"
+                          ToolTip="Synchronize log views by timestamp">
+                    <MenuItem.Icon>
+                        <TextBlock Text="🔗"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="_Theme">
+                    <MenuItem.Icon>
+                        <TextBlock Text="🎨"/>
+                    </MenuItem.Icon>
+                    <MenuItem Header="Dark (VS Code)" Command="{Binding SetThemeCommand}" CommandParameter="0"/>
+                    <MenuItem Header="Monokai" Command="{Binding SetThemeCommand}" CommandParameter="1"/>
+                    <MenuItem Header="Dracula" Command="{Binding SetThemeCommand}" CommandParameter="2"/>
+                    <MenuItem Header="Light" Command="{Binding SetThemeCommand}" CommandParameter="3"/>
+                    <MenuItem Header="High Contrast" Command="{Binding SetThemeCommand}" CommandParameter="4"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Command="{Binding ShowAboutCommand}">
+                    <MenuItem.Icon>
+                        <TextBlock Text="ℹ"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        
+        <!-- Toolbar -->
+        <Border Grid.Row="1" Background="{DynamicResource SecondaryBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
+                Padding="4,2">
+            <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding OpenFilesCommand}" ToolTip="Open Files (Ctrl+O)" Padding="6,3">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📂" Margin="0,0,4,0"/>
+                        <TextBlock Text="Open"/>
+                    </StackPanel>
+                </Button>
+                
+                <Rectangle Width="1" Fill="{DynamicResource BorderBrush}" Margin="4,2"/>
+                
+                <ToggleButton IsChecked="{Binding IsTimeSyncEnabled}" Padding="6,3"
+                              ToolTip="Enable timestamp synchronization across all logs">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔗" Margin="0,0,4,0"/>
+                        <TextBlock Text="Time Sync"/>
+                    </StackPanel>
+                </ToggleButton>
+                
+                <Rectangle Width="1" Fill="{DynamicResource BorderBrush}" Margin="4,2"/>
+                
+                <Button Command="{Binding NextThemeCommand}" ToolTip="Switch to next theme" Padding="6,3">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🎨" Margin="0,0,4,0"/>
+                        <TextBlock Text="Theme"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+        
+        <!-- Main Content - Docking Manager -->
+        <avalonDock:DockingManager Grid.Row="2" 
+                                    x:Name="DockingManager"
+                                    DocumentsSource="{Binding LogPanels}"
+                                    ActiveContent="{Binding ActivePanel, Mode=TwoWay}"
+                                    Background="{DynamicResource BackgroundBrush}">
+            
+            <avalonDock:DockingManager.Theme>
+                <avalonDockThemes:Vs2013DarkTheme/>
+            </avalonDock:DockingManager.Theme>
+            
+            <avalonDock:DockingManager.LayoutItemTemplate>
+                <DataTemplate>
+                    <views:LogPanelView DataContext="{Binding}"/>
+                </DataTemplate>
+            </avalonDock:DockingManager.LayoutItemTemplate>
+            
+            <avalonDock:DockingManager.LayoutItemContainerStyle>
+                <Style TargetType="{x:Type avalonDock:LayoutItem}">
+                    <Setter Property="Title" Value="{Binding Model.Title}"/>
+                    <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
+                    <Setter Property="ContentId" Value="{Binding Model.FilePath}"/>
+                </Style>
+            </avalonDock:DockingManager.LayoutItemContainerStyle>
+            
+            <avalonDock:LayoutRoot>
+                <avalonDock:LayoutPanel Orientation="Horizontal">
+                    <avalonDock:LayoutDocumentPane/>
+                </avalonDock:LayoutPanel>
+            </avalonDock:LayoutRoot>
+        </avalonDock:DockingManager>
+        
+        <!-- Welcome Panel (when no files are open) -->
+        <Border Grid.Row="2" 
+                Visibility="{Binding LogPanels.Count, Converter={StaticResource CountToVisibilityConverter}}"
+                Background="{DynamicResource BackgroundBrush}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="🦊" FontSize="72" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                <TextBlock Text="Kitsune Log Viewer" FontSize="24" FontWeight="Light"
+                           Foreground="{DynamicResource ForegroundBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Real-time multi-file log viewer" FontSize="14"
+                           Foreground="{DynamicResource ForegroundDimBrush}" HorizontalAlignment="Center"
+                           Margin="0,10,0,30"/>
+                
+                <Button Command="{Binding OpenFilesCommand}" 
+                        HorizontalAlignment="Center" Padding="20,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📂" FontSize="16" Margin="0,0,10,0"/>
+                        <TextBlock Text="Open Log Files" FontSize="14"/>
+                    </StackPanel>
+                </Button>
+                
+                <TextBlock Text="or drag &amp; drop files here" FontSize="12"
+                           Foreground="{DynamicResource ForegroundDimBrush}" HorizontalAlignment="Center"
+                           Margin="0,15,0,0"/>
+                
+                <TextBlock Margin="0,40,0,0" HorizontalAlignment="Center"
+                           Foreground="{DynamicResource ForegroundDimBrush}" FontSize="11">
+                    <Run Text="Tip: View → Theme to change appearance"/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+        
+        <!-- Status Bar -->
+        <Border Grid.Row="3" Background="{DynamicResource AccentBrush}" Padding="10,4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0"
+                           Text="{Binding LogPanels.Count, StringFormat='📁 {0} files'}"
+                           Foreground="White" VerticalAlignment="Center"/>
+                
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,20,0">
+                    <TextBlock Text="🔗 Sync: " Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding IsTimeSyncEnabled, Converter={StaticResource BoolToOnOffConverter}}"
+                               Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                    <TextBlock Text="🎨 " Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentThemeName}"
+                               Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

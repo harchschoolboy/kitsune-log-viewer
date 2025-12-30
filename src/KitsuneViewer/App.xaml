@@ -1,0 +1,21 @@
+<Application x:Class="KitsuneViewer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:KitsuneViewer.Converters"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/DarkTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Converters -->
+            <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+            <converters:BoolToOnOffConverter x:Key="BoolToOnOffConverter"/>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+            <converters:LogLevelToBrushConverter x:Key="LogLevelToBrushConverter"/>
+            <converters:BoolToTextWrappingConverter x:Key="BoolToTextWrappingConverter"/>
+            <converters:BoolToScrollBarVisibilityConverter x:Key="BoolToScrollBarVisibilityConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

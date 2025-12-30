@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>KitsuneViewer</AssemblyName>
+    <RootNamespace>KitsuneViewer</RootNamespace>
+    <ApplicationIcon>..\..\KitsuneViewer.ico</ApplicationIcon>
+    
+    <!-- Single file publish settings -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    
+    <!-- Disable localization (no satellite assemblies) -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    
+    <!-- App info -->
+    <Version>1.0.0</Version>
+    <Product>Kitsune Log Viewer</Product>
+    <Company>Kitsune</Company>
+    <Copyright>© 2024-2025</Copyright>
+    <Description>Multi-file real-time log viewer with timestamp sync</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dirkster.AvalonDock" Version="4.72.1" />
+    <PackageReference Include="Dirkster.AvalonDock.Themes.VS2013" Version="4.72.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="..\..\KitsuneViewer.ico" Link="KitsuneViewer.ico" />
+  </ItemGroup>
+
+</Project>

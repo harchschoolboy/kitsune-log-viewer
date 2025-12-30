@@ -1,0 +1,42 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+# Publish output
+publish/
+publish-*/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.cache
+*.rsuser
+
+# JetBrains Rider
+.idea/
+*.DotSettings.user
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# NuGet
+*.nupkg
+.nuget/
+packages/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+[Ll]ogs/
