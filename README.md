@@ -33,4 +33,4 @@ See [INSTALL.md](INSTALL.md) for installation details.
 
 ## License
 
-GPL3 License — see [LICENSE](LICENSE) for details.
+GPL3 License 
