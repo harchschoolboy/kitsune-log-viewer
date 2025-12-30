@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -56,6 +57,9 @@ public partial class LogPanelViewModel : ObservableObject, IDisposable
     
     [ObservableProperty]
     private int _totalLines;
+    
+    [ObservableProperty]
+    private List<LogEntry> _selectedEntries = new();
     
     public event EventHandler? ScrollToEndRequested;
     public event EventHandler<LogEntry>? ScrollToEntryRequested;
@@ -257,6 +261,22 @@ public partial class LogPanelViewModel : ObservableObject, IDisposable
         if (!string.IsNullOrEmpty(text))
         {
             Clipboard.SetText(text);
+            StatusText = $"Copied {Entries.Count} lines to clipboard";
+        }
+    }
+    
+    [RelayCommand]
+    private void CopySelected()
+    {
+        if (SelectedEntries.Any())
+        {
+            var text = string.Join(Environment.NewLine, SelectedEntries.Select(e => e.RawLine));
+            Clipboard.SetText(text);
+            StatusText = $"Copied {SelectedEntries.Count} selected line{(SelectedEntries.Count == 1 ? "" : "s")} to clipboard";
+        }
+        else
+        {
+            StatusText = "No lines selected to copy";
         }
     }
     

@@ -90,6 +90,7 @@
         <!-- Log Content - Using ListBox for virtualization -->
         <ListBox x:Name="LogListBox" Grid.Row="1"
                  ItemsSource="{Binding FilteredEntries}"
+                 SelectionMode="Extended"
                  VirtualizingPanel.IsVirtualizing="True"
                  VirtualizingPanel.VirtualizationMode="Recycling"
                  ScrollViewer.HorizontalScrollBarVisibility="{Binding IsWordWrap, Converter={StaticResource BoolToScrollBarVisibilityConverter}}"
@@ -98,7 +99,28 @@
                  BorderThickness="0"
                  FontFamily="Cascadia Code, Consolas, Courier New"
                  FontSize="13"
-                 SelectionChanged="LogListBox_SelectionChanged">
+                 SelectionChanged="LogListBox_SelectionChanged"
+                 KeyDown="LogListBox_KeyDown">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Copy Selected" Command="{Binding CopySelectedCommand}" InputGestureText="Ctrl+C">
+                        <MenuItem.Icon>
+                            <TextBlock Text="📋"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Copy All" Command="{Binding CopyToClipboardCommand}">
+                        <MenuItem.Icon>
+                            <TextBlock Text="📄"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Select All" Click="SelectAll_Click" InputGestureText="Ctrl+A">
+                        <MenuItem.Icon>
+                            <TextBlock Text="☑"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </ListBox.ContextMenu>
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Padding" Value="5,2"/>
