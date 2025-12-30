@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using KitsuneViewer.Models;
 using KitsuneViewer.Services;
 using KitsuneViewer.ViewModels;
@@ -60,10 +63,32 @@ public partial class LogPanelView : UserControl
         if (_isScrollingToEntry) return;
         if (ViewModel == null) return;
         
+        // Update ViewModel with selected items for copy command
+        ViewModel.SelectedEntries = LogListBox.SelectedItems.Cast<LogEntry>().ToList();
+        
         if (LogListBox.SelectedItem is LogEntry entry && entry.Timestamp.HasValue)
         {
             Logger.Debug($"User selected line {entry.LineNumber}, syncing timestamp {entry.Timestamp.Value:HH:mm:ss.fff}");
             ViewModel.NotifyTimeSync(entry.Timestamp.Value);
         }
+    }
+    
+    private void LogListBox_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.C && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+        {
+            ViewModel?.CopySelectedCommand?.Execute(null);
+            e.Handled = true;
+        }
+        else if (e.Key == Key.A && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+        {
+            LogListBox.SelectAll();
+            e.Handled = true;
+        }
+    }
+    
+    private void SelectAll_Click(object sender, RoutedEventArgs e)
+    {
+        LogListBox.SelectAll();
     }
 }
